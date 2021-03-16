@@ -41,7 +41,7 @@ struct bloc *bloc_init(int type)
     res->pos_y = INIT_Y;
     res->type = type;
     res->rot = 0;
-    res->c = '#';
+    res->c = type;
 
     res->diff_x = points_bloc_x(type, res->rot);
     res->diff_y = points_bloc_y(type, res->rot);
@@ -84,7 +84,7 @@ int bloc_down(struct game *game, int bottom)
 
     if (bottom)
         bloc->pos_y--;
-    return 1 + bottom;
+    return 2 + bottom;
 }
 
 int bloc_rotate(struct game *game)

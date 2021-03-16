@@ -22,21 +22,37 @@ void map_destroy(char **map)
 
 static void print_char(char c)
 {
-    if (!c)
-        printf(" ");
-    else
-        printf("%c", c);
-    /*
+    if (c == 0)
+    {
+        printf("  ");
+        return;
+    }
+
     switch(c)
     {
-    case '#':
-        printf("#");
+    case BLOC_O:
+        printf(YEL);
         break;
-    case ' ':
-        printf(" ");
+    case BLOC_I:
+        printf(CYN);
+        break;
+    case BLOC_L:
+        printf(WHT);
+        break;
+    case BLOC_T:
+        printf(MAG);
+        break;
+    case BLOC_J:
+        printf(BLU);
+        break;
+    case BLOC_S:
+        printf(GRN);
+        break;
+    case BLOC_Z:
+        printf(RED);
         break;
     }
-    */
+    printf("██" RESET);
 }
 
 
@@ -53,7 +69,7 @@ int is_coliding(char **map, struct bloc *bloc)
             || y + diff_y[i] >= HEIGHT || y + diff_y[i] < 0)
             return 2;
 
-        if (map[y + diff_y[i]][x + diff_x[i]] == '#')
+        if (map[y + diff_y[i]][x + diff_x[i]] != 0)
             return 1;
     }
     return 0;
@@ -69,7 +85,7 @@ int put_bloc(char **map, struct bloc *bloc)
     int *diff_y = bloc->diff_y;
 
     for (int i = 0; i < 4; i++)
-        map[y + diff_y[i]][x + diff_x[i]] = '#';
+        map[y + diff_y[i]][x + diff_x[i]] = bloc->type;
     return 0;
 }
 
@@ -83,7 +99,7 @@ static void remove_line(char **map, int n)
         i--;
     }
     for (int j = 0; j < WIDTH; j++)
-        map[0][j] = ' ';
+        map[0][j] = 0;
 }
 
 int check_lines(char **map)
@@ -92,7 +108,7 @@ int check_lines(char **map)
     for (int i = 0; i < HEIGHT; i++)
     {
         int j = 0;
-        while (j < WIDTH && map[i][j] == '#')
+        while (j < WIDTH && map[i][j] != 0)
             j++;
         if (j >= WIDTH)
         {
@@ -105,11 +121,13 @@ int check_lines(char **map)
 }
 
 
-void print_map(char **map, struct bloc *bloc)
+void print_map(char **map, struct bloc *bloc, int score)
 {
-    system("clear");
-    for (int i = 0; i < WIDTH + 2; i++)
-        printf("-");
+    printf(CLEAR); // A lot faster than system("clear")
+    printf("╔");
+    for (int i = 1; i < WIDTH + 1; i++)
+        printf("══");
+    printf("╗");
     printf("\r\n");
 
     int x = bloc->pos_x;
@@ -119,7 +137,7 @@ void print_map(char **map, struct bloc *bloc)
 
 
     for (int i = 0; i < HEIGHT; i++) {
-        printf("|");
+        printf("║");
         for (int j = 0; j < WIDTH; j++) {
             for (int n = 0; n < 4; n++)
             {
@@ -132,10 +150,12 @@ void print_map(char **map, struct bloc *bloc)
                     print_char(map[i][j]);
             }
         }
-        printf("|\r\n");
+        printf("║\r\n");
     }
-
-    for (int i = 0; i < WIDTH + 2; i++)
-        printf("-");
+    printf("╚");
+    for (int i = 1; i < WIDTH + 1; i++)
+        printf("══");
+    printf("╝");
     printf("\r\n");
+    printf("Score : %d", score);
 }

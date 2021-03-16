@@ -18,7 +18,7 @@ void sleep_ms(int milliseconds) // cross-platform sleep function
 int main()
 {
     int msec = 0;
-    int trigger = 250; //milliseconds
+    int trigger = DEFAULT_TRIGGER; //milliseconds
 
     srandom(time(NULL));
 
@@ -30,10 +30,16 @@ int main()
 
     struct game *game = game_init();
 
-    print_map(game->map, game->cur_bloc);
-    while (!update(game))
+    int score = 0;
+
+    int current_trigger = trigger;
+    print_map(game->map, game->cur_bloc, score);
+    while (!update(game, &score))
     {
-        print_map(game->map, game->cur_bloc);
+        current_trigger = trigger - score * 10;
+        if (current_trigger < 75)
+            current_trigger = 75;
+        print_map(game->map, game->cur_bloc, score);
         clock_t before = clock();
         do
         {
@@ -43,16 +49,18 @@ int main()
                 int input = get_input(game, in);
                 if (input)
                 {
-                    print_map(game->map, game->cur_bloc);
-                    if(input == 2)
+                    print_map(game->map, game->cur_bloc, score);
+                    if(input == 3)
                         break;
+                    if (input == 2)
+                        before = clock();
                 }
             }
 
             clock_t difference = clock() - before;
             msec = difference * 1000 / CLOCKS_PER_SEC;
 
-        } while (msec < trigger);
+        } while (msec < current_trigger);
     }
 
     game_destroy(game);
